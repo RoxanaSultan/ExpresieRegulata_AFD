@@ -2,11 +2,14 @@
 #include<iostream>
 #include<vector>
 #include<map>
+#include<set>
+#include <string>
+
 class NedeterministicFiniteAutomatonLamda
 {
 private:
-	std::vector<std::string> m_Q;
-	std::vector<char> m_Sigma;
+	std::set<std::string> m_Q;
+	std::set<char> m_Sigma;
 	std::map<std::pair<std::string, char>, std::vector<std::string>> m_Delta;
 	std::string m_Initial;
 	std::string m_Final;
@@ -22,5 +25,13 @@ public:
 	//Getteri
 	std::string GetInitial() const;
 	std::string GetFinal() const;
+
+	NedeterministicFiniteAutomatonLamda Merge(NedeterministicFiniteAutomatonLamda nfa);
+
+	void createNFA_Initial_Final_Character(std::string initial, std::string finals, char character);
+	NedeterministicFiniteAutomatonLamda connectAutomatonLamda(NedeterministicFiniteAutomatonLamda nfa, uint16_t contor);
+	void modifyTpLamdaTranzitions(int contor);
+
+	void PrintAutomaton();
 };
 
