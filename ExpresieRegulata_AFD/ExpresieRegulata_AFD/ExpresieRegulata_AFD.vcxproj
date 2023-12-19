@@ -129,11 +129,13 @@
   <ItemGroup>
     <ClCompile Include="NedeterministicFiniteAutomatonLamda.cpp" />
     <ClCompile Include="RegularExpression.cpp" />
+    <ClCompile Include="DeterministicFiniteAutomaton.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NedeterministicFiniteAutomatonLamda.h" />
     <ClInclude Include="RegularExpression.h" />
+    <ClInclude Include="DeterministicFiniteAutomaton.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
