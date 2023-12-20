@@ -3,7 +3,10 @@
 #include<vector>
 #include<map>
 #include<set>
+#include<unordered_set>
+#include<unordered_map>
 #include <string>
+#include "DeterministicFiniteAutomaton.h"
 
 class NedeterministicFiniteAutomatonLamda
 {
@@ -13,6 +16,12 @@ private:
 	std::map<std::pair<std::string, char>, std::vector<std::string>> m_Delta;
 	std::string m_Initial;
 	std::string m_Final;
+
+
+	std::unordered_set<std::string> LamdaClosure(std::unordered_set<std::string> q);
+	std::unordered_set<std::string> LamdaClosureForQ(std::string q);
+	std::unordered_set<std::string> QWithCharacter(std::unordered_set<std::string>, char character);
+
 public:
 	NedeterministicFiniteAutomatonLamda();
 	NedeterministicFiniteAutomatonLamda(const NedeterministicFiniteAutomatonLamda& afn);
@@ -32,6 +41,8 @@ public:
 	NedeterministicFiniteAutomatonLamda connectAutomatonLamda(NedeterministicFiniteAutomatonLamda nfa, uint16_t contor);
 	void modifyTpLamdaTranzitions(int contor);
 
+
+	void NedeterministicToDeterministic(DeterministicFiniteAutomaton dfa);
 	void PrintAutomaton();
 };
 

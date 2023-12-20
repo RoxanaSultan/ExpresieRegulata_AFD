@@ -1,5 +1,37 @@
 #include "NedeterministicFiniteAutomatonLamda.h"
 
+std::unordered_set<std::string> NedeterministicFiniteAutomatonLamda::LamdaClosure(std::unordered_set<std::string> q)
+{
+	std::unordered_set<std::string> closures;
+	for (auto it : q)
+	{
+		auto newUnordered_set = LamdaClosureForQ(it);
+		closures.insert(newUnordered_set.begin(), newUnordered_set.end());
+		closures.insert(it);
+	}
+	
+	return closures;
+}
+
+std::unordered_set<std::string> NedeterministicFiniteAutomatonLamda::LamdaClosureForQ(std::string q)
+{
+	std::unordered_set<std::string> closures;
+	if(find(m_Delta.begin(), m_Delta.end(), std::make_pair(q, '#')) != m_Delta.end())
+	{
+		auto myVector = find(m_Delta.begin(), m_Delta.end(), std::make_pair(q, '#'))->second;
+		closures.insert(myVector.begin(), myVector.end());
+		for (auto it : myVector)
+		{
+			auto newSet = LamdaClosureForQ(it);
+			closures.insert(newSet.begin(), newSet.end());
+		}
+	}
+	
+	return closures;
+}
+
+
+
 NedeterministicFiniteAutomatonLamda::NedeterministicFiniteAutomatonLamda()
 {
 	m_Sigma.insert('#');
@@ -108,6 +140,39 @@ void NedeterministicFiniteAutomatonLamda::modifyTpLamdaTranzitions(int contor)
 	this->m_Delta[{lastFinal, '#'}].push_back(m_Final);
 	this->m_Delta[{lastFinal, '#'}].push_back(lastInitial);
 	this->m_Delta[{m_Initial, '#'}].push_back(m_Final);
+}
+
+void NedeterministicFiniteAutomatonLamda::NedeterministicToDeterministic(DeterministicFiniteAutomaton dfa)
+{
+	int count;
+
+	std::vector<std::unordered_set<std::string>> lamdaClosures;
+	std::unordered_map<std::unordered_set<std::string>, std::unordered_set<std::string>* > resultFromLamdaClosure;
+	std::unordered_map<std::string, std::unordered_set<std::string>* > newQ;
+
+
+	//std::map<std::unordered_set<std::string>, std::pair<std::string, std::unordered_set<std::string>>> map;
+
+	std::unordered_set<std::string> set;
+	set.insert(m_Initial);
+	lamdaClosures.push_back(LamdaClosureForQ(m_Initial));
+	resultFromLamdaClosure[set] = &lamdaClosures[0];
+
+
+	dfa.AddInQ("q_0");
+	dfa.SetSigma(m_Sigma);
+	auto it = dfa.GetQ().begin();
+	while (it != dfa.GetQ().end())
+	{
+		for (auto character : m_Sigma)
+		{
+
+		}
+
+		++it;
+	}
+
+
 }
 
 void NedeterministicFiniteAutomatonLamda::PrintAutomaton()
