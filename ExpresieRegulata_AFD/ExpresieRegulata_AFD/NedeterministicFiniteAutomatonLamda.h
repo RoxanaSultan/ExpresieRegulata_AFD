@@ -20,7 +20,8 @@ private:
 
 	std::unordered_set<std::string> LamdaClosure(std::unordered_set<std::string> q);
 	std::unordered_set<std::string> LamdaClosureForQ(std::string q);
-	std::unordered_set<std::string> QWithCharacter(std::unordered_set<std::string>, char character);
+	std::unordered_set<std::string> QWithCharacter(std::string q, char character);
+	bool IsFinal(std::unordered_set<std::string> closures);
 
 public:
 	NedeterministicFiniteAutomatonLamda();
@@ -42,7 +43,7 @@ public:
 	void modifyTpLamdaTranzitions(int contor);
 
 
-	void NedeterministicToDeterministic(DeterministicFiniteAutomaton dfa);
+	void NedeterministicToDeterministic(DeterministicFiniteAutomaton& dfa);
 	void PrintAutomaton();
 };
 

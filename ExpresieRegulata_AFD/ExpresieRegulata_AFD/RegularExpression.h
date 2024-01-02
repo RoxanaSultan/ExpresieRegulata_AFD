@@ -19,7 +19,7 @@ public:
 	RegularExpression& operator=(const RegularExpression& expression);
 	void ExpressionToPolishNotation();
 	NedeterministicFiniteAutomatonLamda CreateNFA();
-
+	bool IsValid();
 	friend std::istream& operator>>(std::istream& in, RegularExpression& expression);
 };
 

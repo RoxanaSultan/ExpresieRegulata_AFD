@@ -23,8 +23,11 @@
     </ClCompile>
     <ClCompile Include="RegularExpression.cpp">
       <Filter>Source Files</Filter>
-      </ClCompile>
+    </ClCompile>
     <ClCompile Include="DeterministicFiniteAutomaton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PolishNotation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,5 +41,12 @@
     <ClInclude Include="DeterministicFiniteAutomaton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PolishNotation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="file.in" />
+    <None Include="file.out" />
   </ItemGroup>
 </Project>

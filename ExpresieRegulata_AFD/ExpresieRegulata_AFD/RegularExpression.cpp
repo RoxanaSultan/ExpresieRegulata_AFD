@@ -7,6 +7,19 @@ std::istream& operator>>(std::istream& in, RegularExpression& expression)
     return in;
 }
 
+bool RegularExpression::IsValid()
+{
+    for (auto i : m_word)
+    {
+        if (i < 'a' && i > 'z' && i != '*' && i != '|' && i != '.' && i != '(' && i != ')')
+        {
+            std::cout << "The expression contains invalid elements!\n";
+            return false;
+        }
+    }
+    return true;
+}
+
 RegularExpression::RegularExpression(const RegularExpression& expression) : m_word{expression.m_word}, m_PolishNotation{expression.m_PolishNotation}
 {}
 
@@ -28,7 +41,7 @@ NedeterministicFiniteAutomatonLamda RegularExpression::CreateNFA()
     uint16_t index = 0, contor = 0;
     std::queue<char> Queue = m_PolishNotation.GetQueuePolishNotation();
     char character;
-    std::string operators("|.*()");
+    std::string operators("|.*");
     while (!Queue.empty())
     {
         character = Queue.front();

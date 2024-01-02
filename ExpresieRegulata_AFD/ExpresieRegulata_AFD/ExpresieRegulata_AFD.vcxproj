@@ -140,6 +140,10 @@
     <ClInclude Include="RegularExpression.h" />
     <ClInclude Include="DeterministicFiniteAutomaton.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="file.in" />
+    <None Include="file.out" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
