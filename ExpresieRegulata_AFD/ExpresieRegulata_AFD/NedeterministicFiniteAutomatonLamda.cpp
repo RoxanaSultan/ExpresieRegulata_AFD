@@ -194,30 +194,34 @@ void NedeterministicFiniteAutomatonLamda::NedeterministicToDeterministic(Determi
 	
 	std::unordered_set<std::string> lamdaClosures, states;
 	int index = 0;
-		lamdaClosures = LamdaClosureForQ(m_Initial);
-			lamdaClosures.insert(m_Initial);
-			states.insert(m_Initial);
-			resultFromLamdaClosure[states] = lamdaClosures;
-			newQ["q_" + std::to_string(index)] = lamdaClosures;
+	lamdaClosures = LamdaClosureForQ(m_Initial);
+	lamdaClosures.insert(m_Initial);
+	states.insert(m_Initial);
+	resultFromLamdaClosure[states] = lamdaClosures;
+	newQ["q_" + std::to_string(index)] = lamdaClosures;
 
-			lamdaClosures.clear();
-			states.clear();
-			dfa.SetInitial("q_" + std::to_string(index));
+	lamdaClosures.clear();
+	states.clear();
+	dfa.SetInitial("q_" + std::to_string(index));
 
-			index++;
+	index++;
 
 	dfa.SetQ("q_0");
 	dfa.SetSigma(m_Sigma);
 
-	auto Q = dfa.GetQ();
-	auto it = Q.begin();
-	auto finalIterator = Q.end();
+	auto aux = dfa.GetQ();
+	std::vector<std::string> Q(aux.begin(), aux.end());
+	//auto it = Q.begin();
+	//auto finalIterator = Q.end();
+	
+	int ind = 0;
+
 	//de modificat Q in vector pentru a parcurge vectorul cu un while. 
 	//eroare pentru ca parcurgem si modificam Q in acelasi timp
 
-	/*while(it != finalIterator)
+	while(ind < Q.size())
 	{
-		const std::string currentState = *it;
+		const std::string currentState = Q[ind];
 		for (auto character : m_Sigma)
 		{ 
 			for (auto status : newQ[currentState])
@@ -240,10 +244,11 @@ void NedeterministicFiniteAutomatonLamda::NedeterministicToDeterministic(Determi
 			lamdaClosures.clear();
 			states.clear();
 		}
-		Q = dfa.GetQ();
-		finalIterator = Q.end();
-		it++;
-	}*/
+		auto aux = dfa.GetQ();
+		std::vector<std::string> Q(aux.begin(), aux.end());
+		//finalIterator = Q.end();
+		ind++;
+	}
 
 	for (auto [state, closures] : newQ)
 	{
