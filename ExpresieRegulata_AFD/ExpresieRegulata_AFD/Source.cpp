@@ -12,11 +12,11 @@ void PrintMenu()
 }
 
 int main()
-{
-	std::ifstream file("file.in");
+{	std::ifstream file("file.in");
 	if (!file.is_open())
 	{
 		std::cout << "The file did not open correctly!\n";
+		return 1;
 	}
 	RegularExpression myExpression;
 	file >> myExpression;

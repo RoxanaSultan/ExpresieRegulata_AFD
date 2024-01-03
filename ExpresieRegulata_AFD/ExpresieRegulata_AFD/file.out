@@ -1,0 +1,3 @@
+M = ({q_0, q_1, q_2}, {a, b}, delta, q_0, {}), where delta is:
+(q_0, a) = q_1;
+(q_1, b) = q_2;

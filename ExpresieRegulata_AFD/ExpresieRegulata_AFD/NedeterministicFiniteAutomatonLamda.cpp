@@ -33,10 +33,18 @@ std::unordered_set<std::string> NedeterministicFiniteAutomatonLamda::LamdaClosur
 std::unordered_set<std::string> NedeterministicFiniteAutomatonLamda::QWithCharacter(std::string q, char character)
 {
 	std::unordered_set<std::string> set;
-	auto it = m_Delta.find({ q, character });
-	if (it != m_Delta.end())
+	std::vector<std::string> foundVector;
+	for (auto it : m_Delta)
 	{
-		set.insert(it->second.begin(), it->second.end());
+		if (it.first.first.find(q) != std::string::npos && it.first.second == character)
+		{
+			foundVector = it.second;
+			break;
+		}
+	}
+	if (foundVector.size())
+	{
+		set.insert(foundVector.begin(), foundVector.end());
 	}
 	return set;
 }
@@ -230,12 +238,15 @@ void NedeterministicFiniteAutomatonLamda::NedeterministicToDeterministic(Determi
 	dfa.SetSigma(m_Sigma);
 
 	auto Q = dfa.GetQ();
+	auto it = Q.begin();
+	auto finalIterator = Q.end();
 
-	for(auto it : Q)
+	while(it != finalIterator)
 	{
+		const std::string currentState = *it;
 		for (auto character : m_Sigma)
-		{
-			for (auto status : newQ[it])
+		{ 
+			for (auto status : newQ[currentState])
 			{
 				std::unordered_set<std::string> aux = QWithCharacter(status, character);
 				states.insert(aux.begin(), aux.end());
@@ -256,6 +267,9 @@ void NedeterministicFiniteAutomatonLamda::NedeterministicToDeterministic(Determi
 			lamdaClosures.clear();
 			states.clear();
 		}
+		Q = dfa.GetQ();
+		finalIterator = Q.end();
+		it++;
 	}
 
 	for (auto [state, closures] : newQ)
