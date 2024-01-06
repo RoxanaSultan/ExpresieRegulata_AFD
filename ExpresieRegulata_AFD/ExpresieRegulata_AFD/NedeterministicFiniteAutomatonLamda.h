@@ -8,6 +8,8 @@
 #include <string>
 #include "DeterministicFiniteAutomaton.h"
 
+std::string FindCurrentStateWithLamdaClosures(std::unordered_map<std::string, std::unordered_set<std::string>> myMap, std::unordered_set<std::string> setToFind);
+
 class NedeterministicFiniteAutomatonLamda
 {
 private:

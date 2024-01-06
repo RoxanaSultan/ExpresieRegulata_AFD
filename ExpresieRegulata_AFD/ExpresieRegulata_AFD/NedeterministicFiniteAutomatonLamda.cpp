@@ -36,7 +36,8 @@ std::unordered_set<std::string> NedeterministicFiniteAutomatonLamda::QWithCharac
 	std::vector<std::string> foundVector;
 	for (auto it : m_Delta)
 	{
-		if (it.first.first.find(q) != std::string::npos && it.first.second == character)
+		std::string myString = it.first.first;
+		if (myString.size() >= q.size() && (myString.find(q + "q") != std::string::npos || myString.compare(myString.size() - q.size(), q.size(), q) == 0 || myString == q) && it.first.second == character)
 		{
 			foundVector = it.second;
 			break;
@@ -231,21 +232,28 @@ void NedeterministicFiniteAutomatonLamda::NedeterministicToDeterministic(Determi
 			}
 			
 			lamdaClosures = LamdaClosure(states);
-
-			if (resultFromLamdaClosure.find(states) == resultFromLamdaClosure.end())
+			if(states.size())
 			{
-				resultFromLamdaClosure[states] = lamdaClosures;
-				newQ["q_" + std::to_string(index)] = lamdaClosures;
-				dfa.SetQ("q_" + std::to_string(index));
-				dfa.SetDelta(index, character);
-				index++;
+				if (resultFromLamdaClosure.find(states) == resultFromLamdaClosure.end())
+				{
+					resultFromLamdaClosure[states] = lamdaClosures;
+					newQ["q_" + std::to_string(index)] = lamdaClosures;
+					dfa.SetQ("q_" + std::to_string(index));
+					dfa.SetDelta(currentState, character, "q_" + std::to_string(index));
+					index++;
+				}
+				else
+				{
+					dfa.SetDelta(currentState, character, FindCurrentStateWithLamdaClosures(newQ, lamdaClosures));
+				}
 			}
 
 			lamdaClosures.clear();
 			states.clear();
 		}
 		auto aux = dfa.GetQ();
-		std::vector<std::string> Q(aux.begin(), aux.end());
+		//std::vector<std::string>;
+		Q.assign(aux.begin(), aux.end());
 		//finalIterator = Q.end();
 		ind++;
 	}
@@ -289,4 +297,14 @@ void NedeterministicFiniteAutomatonLamda::PrintAutomaton()
 			std::cout << i << ";\n";
 		}
 	}
+}
+
+std::string FindCurrentStateWithLamdaClosures(std::unordered_map<std::string, std::unordered_set<std::string>> myMap, std::unordered_set<std::string> setToFind)
+{
+	for (auto& [string, set] : myMap)
+	{
+		if (set == setToFind)
+			return string;
+	}
+	return std::string();
 }

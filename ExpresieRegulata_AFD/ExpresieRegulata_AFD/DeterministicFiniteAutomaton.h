@@ -28,7 +28,7 @@ public:
 	void SetQ(std::string q);
 	void SetSigma(std::set<char> sigma);
 	void SetFinal(std::string state);
-	void SetDelta(int index, char character);
+	void SetDelta(std::string Key, char character, std::string Value);
 	void SetInitial(std::string state);
 
 	std::set<std::string> GetQ();

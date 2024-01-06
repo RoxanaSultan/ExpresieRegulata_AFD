@@ -159,9 +159,9 @@ void DeterministicFiniteAutomaton::SetFinal(std::string state)
     m_Final = state;
 }
 
-void DeterministicFiniteAutomaton::SetDelta(int index, char character)
+void DeterministicFiniteAutomaton::SetDelta(std::string Key, char character, std::string Value)
 {
-    m_Delta[{"q_" + std::to_string(index - 1), character}].push_back("q_" + std::to_string(index));
+    m_Delta[{Key, character}].push_back(Value);
 }
 
 void DeterministicFiniteAutomaton::SetInitial(std::string state)
