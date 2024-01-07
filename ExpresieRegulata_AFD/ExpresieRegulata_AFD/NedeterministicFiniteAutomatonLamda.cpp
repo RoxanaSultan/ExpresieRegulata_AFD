@@ -54,7 +54,7 @@ bool NedeterministicFiniteAutomatonLamda::IsFinal(std::unordered_set<std::string
 {
 	for (auto it : closures)
 	{
-		if (it == m_Final)
+		if (m_Finals.find(it) != m_Finals.end())
 		{
 			return true;
 		}
@@ -63,16 +63,14 @@ bool NedeterministicFiniteAutomatonLamda::IsFinal(std::unordered_set<std::string
 }
 
 NedeterministicFiniteAutomatonLamda::NedeterministicFiniteAutomatonLamda()
-{
-	//m_Sigma.insert('#');
-}
+{}
 
 NedeterministicFiniteAutomatonLamda::NedeterministicFiniteAutomatonLamda(const NedeterministicFiniteAutomatonLamda& afn) :
 	m_Q{ afn.m_Q },
 	m_Sigma{ afn.m_Sigma },
 	m_Delta{ afn.m_Delta },
 	m_Initial{ afn.m_Initial },
-	m_Final{ afn.m_Final }
+	m_Finals{ afn.m_Finals }
 {}
 
 NedeterministicFiniteAutomatonLamda& NedeterministicFiniteAutomatonLamda::operator=(const NedeterministicFiniteAutomatonLamda& afn)
@@ -81,7 +79,7 @@ NedeterministicFiniteAutomatonLamda& NedeterministicFiniteAutomatonLamda::operat
 	m_Sigma = afn.m_Sigma;
 	m_Delta = afn.m_Delta;
 	m_Initial = afn.m_Initial;
-	m_Final = afn.m_Final;
+	m_Finals = afn.m_Finals;
 	return *this;
 }
 
@@ -92,11 +90,14 @@ void NedeterministicFiniteAutomatonLamda::SetInitial(const std::string& initial)
 		m_Q.insert(initial);
 }
 
-void NedeterministicFiniteAutomatonLamda::SetFinal(const std::string & final)
+void NedeterministicFiniteAutomatonLamda::SetFinals(const std::set<std::string>& finals)
 {
-	m_Final = final;
-	if (std::ranges::find(m_Q, final) == m_Q.end())
-		m_Q.insert(final);
+	m_Finals = finals;
+	for (auto state : finals)
+	{
+		if (std::ranges::find(m_Q, state) == m_Q.end())
+			m_Q.insert(state);
+	}
 }
 
 std::string NedeterministicFiniteAutomatonLamda::GetInitial() const
@@ -104,49 +105,63 @@ std::string NedeterministicFiniteAutomatonLamda::GetInitial() const
 	return m_Initial;
 }
 
-std::string NedeterministicFiniteAutomatonLamda::GetFinal() const
+std::set<std::string> NedeterministicFiniteAutomatonLamda::GetFinals() const
 {
-	return m_Final;
+	return m_Finals;
 }
 
 NedeterministicFiniteAutomatonLamda NedeterministicFiniteAutomatonLamda::Merge(NedeterministicFiniteAutomatonLamda nfa)
 {
 	m_Q.insert(nfa.m_Q.begin(), nfa.m_Q.end());
 	m_Q.erase(std::ranges::find(m_Q, nfa.m_Initial));
-	m_Q.erase(std::ranges::find(m_Q, m_Final));
-	m_Q.insert(m_Final + nfa.m_Initial);
+	for (auto state : m_Finals)
+	{
+		m_Q.erase(std::ranges::find(m_Q, state));
+	}
+	for (auto state : m_Finals)
+	{
+		m_Q.insert(state + nfa.m_Initial);
+	}
 	m_Sigma.insert(nfa.m_Sigma.begin(), nfa.m_Sigma.end());
 	for (auto it : nfa.m_Delta)
 	{
 		if (it.first.first == nfa.m_Initial)
 		{
-			m_Delta[{m_Final + nfa.m_Initial, it.first.second}] = it.second;
+			for (auto state : m_Finals)
+			{
+				m_Delta[{state + nfa.m_Initial, it.first.second}] = it.second;
+			}
 		}
 		else
 		{
 			m_Delta[it.first] = it.second;
 		}
 	}
-	m_Final = nfa.m_Final;
+	m_Finals = nfa.m_Finals;
 	return *this;
 }
 
-void NedeterministicFiniteAutomatonLamda::createNFA_Initial_Final_Character(std::string initial, std::string final, char character)
+void NedeterministicFiniteAutomatonLamda::createNFA_Initial_Final_Character(std::string initial, std::set<std::string> finals, char character)
 {
 	m_Initial = initial;
-	m_Final = final;
+	m_Finals = finals;
 	m_Q.insert(initial);
-	m_Q.insert(final);
+	for (auto state : finals)
+	{
+		m_Q.insert(state);
+	}
 	m_Sigma.insert(character);
-	m_Delta[{initial, character}].push_back(final);
-
+	for (auto state : finals)
+	{
+		m_Delta[{initial, character}].push_back(state);
+	}
 }
 
 NedeterministicFiniteAutomatonLamda NedeterministicFiniteAutomatonLamda::connectAutomatonLamda(NedeterministicFiniteAutomatonLamda nfa, uint16_t contor)
 {
 	NedeterministicFiniteAutomatonLamda newNFA;
 	newNFA.SetInitial("q" + std::to_string(contor));
-	newNFA.SetFinal("q" + std::to_string(contor + 1));
+	newNFA.SetFinals({ "q" + std::to_string(contor + 1) });
 
 	//merged m_Q
 	newNFA.m_Q.insert(nfa.m_Q.begin(), nfa.m_Q.end());
@@ -161,20 +176,45 @@ NedeterministicFiniteAutomatonLamda NedeterministicFiniteAutomatonLamda::connect
 	//Added lamda tranzitions
 	newNFA.m_Delta[{newNFA.m_Initial, '#'}].push_back(this->m_Initial);
 	newNFA.m_Delta[{newNFA.m_Initial, '#'}].push_back(nfa.m_Initial);
-	newNFA.m_Delta[{this->m_Final, '#'}].push_back(newNFA.m_Final);
-	newNFA.m_Delta[{nfa.m_Final, '#'}].push_back(newNFA.m_Final);
+	for (auto state : m_Finals)
+	{
+		for (auto stateNewNFA : newNFA.m_Finals)
+		{
+			newNFA.m_Delta[{state, '#'}].push_back(stateNewNFA);
+		}
+	}
+	for (auto state : nfa.m_Finals)
+	{
+		for (auto stateNewNFA : newNFA.m_Finals)
+		{
+			newNFA.m_Delta[{state, '#'}].push_back(stateNewNFA);
+		}
+	}
 	return newNFA;
 }
 
 void NedeterministicFiniteAutomatonLamda::modifyToLamdaTranzitions(int contor)
 {
-	std::string lastInitial = m_Initial, lastFinal = m_Final;
+	std::string lastInitial = m_Initial;
+	std::set<std::string> lastFinal = m_Finals;
 	this->SetInitial("q" + std::to_string(contor));
-	this->SetFinal("q" + std::to_string(contor + 1));
+	this->SetFinals({ "q" + std::to_string(contor + 1) });
 	this->m_Delta[{m_Initial, '#'}].push_back(lastInitial);
-	this->m_Delta[{lastFinal, '#'}].push_back(m_Final);
-	this->m_Delta[{lastFinal, '#'}].push_back(lastInitial);
-	this->m_Delta[{m_Initial, '#'}].push_back(m_Final);
+	for (auto state : lastFinal)
+	{
+		for (auto stateFinal : m_Finals)
+		{
+			this->m_Delta[{state, '#'}].push_back(stateFinal);
+		}
+	}
+	for (auto state : lastFinal)
+	{
+		this->m_Delta[{state, '#'}].push_back(lastInitial);
+	}
+	for (auto state : m_Finals)
+	{
+		this->m_Delta[{m_Initial, '#'}].push_back(state);
+	}
 }
 
 struct UnorderedSetHash {
@@ -212,13 +252,8 @@ void NedeterministicFiniteAutomatonLamda::NedeterministicToDeterministic(Determi
 
 	auto aux = dfa.GetQ();
 	std::vector<std::string> Q(aux.begin(), aux.end());
-	//auto it = Q.begin();
-	//auto finalIterator = Q.end();
 
 	int ind = 0;
-
-	//de modificat Q in vector pentru a parcurge vectorul cu un while. 
-	//eroare pentru ca parcurgem si modificam Q in acelasi timp
 
 	while (ind < Q.size())
 	{
@@ -252,9 +287,7 @@ void NedeterministicFiniteAutomatonLamda::NedeterministicToDeterministic(Determi
 			states.clear();
 		}
 		auto aux = dfa.GetQ();
-		//std::vector<std::string>;
 		Q.assign(aux.begin(), aux.end());
-		//finalIterator = Q.end();
 		ind++;
 	}
 
@@ -262,7 +295,7 @@ void NedeterministicFiniteAutomatonLamda::NedeterministicToDeterministic(Determi
 	{
 		if (IsFinal(closures))
 		{
-			dfa.SetFinal(state);
+			dfa.SetFinals({ state });
 		}
 	}
 }
@@ -287,7 +320,14 @@ void NedeterministicFiniteAutomatonLamda::PrintAutomaton()
 		else std::cout << i << "}, delta, ";
 	}
 	std::cout << m_Initial << ", {";
-	std::cout << m_Final << "}), where delta is:\n";
+	for (const auto& i : m_Finals)
+	{
+		if (&i != &*m_Finals.rbegin())
+		{
+			std::cout << i << ", ";
+		}
+		else std::cout << i << "}), where delta is:\n";
+	}
 	for (auto [key, vector] : m_Delta)
 	{
 		auto [state, character] = key;

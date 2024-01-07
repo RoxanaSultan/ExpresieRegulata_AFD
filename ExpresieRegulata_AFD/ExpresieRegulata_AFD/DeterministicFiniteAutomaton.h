@@ -14,7 +14,7 @@ private:
 	std::set<char> m_Sigma;
 	std::map<std::pair<std::string, char>, std::string> m_Delta;
 	std::string m_Initial;
-	std::string m_Final;
+	std::set<std::string> m_Finals;
 public:
 	DeterministicFiniteAutomaton();
 	DeterministicFiniteAutomaton(const DeterministicFiniteAutomaton& other);
@@ -24,7 +24,7 @@ public:
 
 	void SetQ(std::string q);
 	void SetSigma(std::set<char> sigma);
-	void SetFinal(std::string state);
+	void SetFinals(std::set<std::string> finals);
 	void SetDelta(std::string Key, char character, std::string Value);
 	void SetInitial(std::string state);
 

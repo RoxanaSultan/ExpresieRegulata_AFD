@@ -3,7 +3,6 @@
 std::istream& operator>>(std::istream& in, RegularExpression& expression)
 {
     in >> expression.m_word;
-    expression.ExpressionToPolishNotation();
     return in;
 }
 

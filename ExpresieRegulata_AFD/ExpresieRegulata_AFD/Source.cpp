@@ -30,8 +30,10 @@ int main()
 		std::cout << "The file did not open correctly!\n";
 		return 1;
 	}
+
 	RegularExpression myExpression;
 	file >> myExpression;
+
 	if (myExpression.IsValid())
 	{
 		std::cout << "Valid expression!\n";

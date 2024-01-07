@@ -17,7 +17,7 @@ private:
 	std::set<char> m_Sigma;
 	std::map<std::pair<std::string, char>, std::vector<std::string>> m_Delta;
 	std::string m_Initial;
-	std::string m_Final;
+	std::set<std::string> m_Finals;
 
 
 	std::unordered_set<std::string> LamdaClosure(std::unordered_set<std::string> q);
@@ -30,17 +30,17 @@ public:
 	NedeterministicFiniteAutomatonLamda(const NedeterministicFiniteAutomatonLamda& afn);
 	NedeterministicFiniteAutomatonLamda& operator=(const NedeterministicFiniteAutomatonLamda& afn);
 
-	//Setteri
+	//Setters
 	void SetInitial(const std::string& initial);
-	void SetFinal(const std::string & final);
+	void SetFinals(const std::set<std::string>& finals);
 
-	//Getteri
+	//Getters
 	std::string GetInitial() const;
-	std::string GetFinal() const;
+	std::set<std::string> GetFinals() const;
 
 	NedeterministicFiniteAutomatonLamda Merge(NedeterministicFiniteAutomatonLamda nfa);
 
-	void createNFA_Initial_Final_Character(std::string initial, std::string finals, char character);
+	void createNFA_Initial_Final_Character(std::string initial, std::set<std::string> finals, char character);
 	NedeterministicFiniteAutomatonLamda connectAutomatonLamda(NedeterministicFiniteAutomatonLamda nfa, uint16_t contor);
 	void modifyToLamdaTranzitions(int contor);
 

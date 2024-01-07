@@ -1,12 +1,10 @@
 #include "DeterministicFiniteAutomaton.h"
-    
+
 DeterministicFiniteAutomaton::DeterministicFiniteAutomaton()
-{
-    //m_Sigma.insert('#');
-}
+{}
 
 DeterministicFiniteAutomaton::DeterministicFiniteAutomaton(const DeterministicFiniteAutomaton& other) :
-    m_Q{ other.m_Q }, m_Sigma{ other.m_Sigma }, m_Delta{ other.m_Delta }, m_Initial{ other.m_Initial }, m_Final{ other.m_Final }
+    m_Q{ other.m_Q }, m_Sigma{ other.m_Sigma }, m_Delta{ other.m_Delta }, m_Initial{ other.m_Initial }, m_Finals{ other.m_Finals }
 {}
 
 bool DeterministicFiniteAutomaton::VerifyAutomaton()
@@ -30,9 +28,12 @@ bool DeterministicFiniteAutomaton::VerifyAutomaton()
     }
 
     //Rule4 - m_F has or is equal to m_Q
-    if (find(m_Q.begin(), m_Q.end(), m_Final) == m_Q.end())
+    for (auto state : m_Finals)
     {
-        return false;
+        if (find(m_Q.begin(), m_Q.end(), state) == m_Q.end())
+        {
+            return false;
+        }
     }
 
     //Rule5 - the key in map is valid
@@ -83,7 +84,7 @@ void DeterministicFiniteAutomaton::PrintAutomaton()
             std::cout << i << ", ";
             file << i << ", ";
         }
-        else 
+        else
         {
             std::cout << i << "}, delta, ";
             file << i << "}, delta, ";
@@ -91,8 +92,24 @@ void DeterministicFiniteAutomaton::PrintAutomaton()
     }
     std::cout << m_Initial << ", {";
     file << m_Initial << ", {";
-    std::cout << m_Final << "}), where delta is:\n";
-    file << m_Final << "}), where delta is:\n";
+    for (const auto& i : m_Finals)
+    {
+        if (&i != &*m_Finals.rbegin())
+        {
+            std::cout << i << ", ";
+            file << i << ", ";
+        }
+        else
+        {
+            std::cout << i << "}), where delta is:\n";
+            file << i << "}), where delta is:\n";
+        }
+    }
+    if (m_Finals.empty())
+    {
+        std::cout << "}), where delta is:\n";
+        file << "}), where delta is:\n";
+    }
     for (auto [key, value] : m_Delta)
     {
         auto [state, character] = key;
@@ -114,7 +131,7 @@ bool DeterministicFiniteAutomaton::CheckWord(std::string word)
         }
     }
     std::string currentQ = m_Initial;
-    while (word.size() > 0) 
+    while (word.size() > 0)
     {
         auto it = m_Delta.find({ currentQ, word[0] });
         if (it == m_Delta.end())
@@ -125,7 +142,7 @@ bool DeterministicFiniteAutomaton::CheckWord(std::string word)
         currentQ = it->second;
         word.erase(word.begin(), word.begin() + 1);
     }
-    if (currentQ == m_Final)
+    if (m_Finals.find(currentQ) != m_Finals.end())
     {
         return true;
     }
@@ -142,9 +159,9 @@ void DeterministicFiniteAutomaton::SetSigma(std::set<char> sigma)
     m_Sigma.insert(sigma.begin(), sigma.end());
 }
 
-void DeterministicFiniteAutomaton::SetFinal(std::string state)
+void DeterministicFiniteAutomaton::SetFinals(std::set<std::string> finals)
 {
-    m_Final = state;
+    m_Finals = finals;
 }
 
 void DeterministicFiniteAutomaton::SetDelta(std::string Key, char character, std::string Value)
