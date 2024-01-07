@@ -5,25 +5,28 @@ std::unordered_set<std::string> NedeterministicFiniteAutomatonLamda::LamdaClosur
 	std::unordered_set<std::string> closures;
 	for (auto it : q)
 	{
-		auto newUnordered_set = LamdaClosureForQ(it);
-		closures.insert(newUnordered_set.begin(), newUnordered_set.end());
-		closures.insert(it);
+		LamdaClosureForQ(it, closures);
+		/*closures.insert(newUnordered_set.begin(), newUnordered_set.end());
+		closures.insert(it);*/
 	}
 
 	return closures;
 }
 
-std::unordered_set<std::string> NedeterministicFiniteAutomatonLamda::LamdaClosureForQ(std::string q)
+std::unordered_set<std::string> NedeterministicFiniteAutomatonLamda::LamdaClosureForQ(std::string q, std::unordered_set<std::string>& closures)
 {
-	std::unordered_set<std::string> closures;
+	//std::unordered_set<std::string> closures;
 	if (m_Delta.find({ q, '#' }) != m_Delta.end())
 	{
 		auto myVector = m_Delta.find({ q, '#' })->second;
 		closures.insert(myVector.begin(), myVector.end());
 		for (auto it : myVector)
 		{
-			auto newSet = LamdaClosureForQ(it);
-			closures.insert(newSet.begin(), newSet.end());
+			if(closures.find(it) == closures.end())
+			{
+				auto newSet = LamdaClosureForQ(it, closures);
+				closures.insert(newSet.begin(), newSet.end());
+			}
 		}
 	}
 
@@ -235,7 +238,7 @@ void NedeterministicFiniteAutomatonLamda::NedeterministicToDeterministic(Determi
 
 	std::unordered_set<std::string> lamdaClosures, states;
 	int index = 0;
-	lamdaClosures = LamdaClosureForQ(m_Initial);
+	LamdaClosureForQ(m_Initial, lamdaClosures);
 	lamdaClosures.insert(m_Initial);
 	states.insert(m_Initial);
 	resultFromLamdaClosure[states] = lamdaClosures;

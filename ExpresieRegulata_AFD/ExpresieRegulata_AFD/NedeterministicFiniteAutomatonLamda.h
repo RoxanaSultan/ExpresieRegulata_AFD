@@ -21,7 +21,7 @@ private:
 
 
 	std::unordered_set<std::string> LamdaClosure(std::unordered_set<std::string> q);
-	std::unordered_set<std::string> LamdaClosureForQ(std::string q);
+	std::unordered_set<std::string> LamdaClosureForQ(std::string q, std::unordered_set<std::string>& closures);
 	std::unordered_set<std::string> QWithCharacter(std::string q, char character);
 	bool IsFinal(std::unordered_set<std::string> closures);
 
