@@ -43,7 +43,7 @@ bool DeterministicFiniteAutomaton::VerifyAutomaton()
         {
             return false;
         }
-        if (find(m_Sigma.begin(), m_Sigma.end(), it.first.second) == m_Sigma.end())
+        if (find(m_Sigma.begin(), m_Sigma.end(), it.first.second) == m_Sigma.end() && it.first.second != '#')
         {
             return false;
         }

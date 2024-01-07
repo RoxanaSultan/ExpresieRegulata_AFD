@@ -41,7 +41,6 @@ int main()
 		myExpression.ExpressionToPolishNotation();
 
 		NedeterministicFiniteAutomatonLamda NFA = myExpression.CreateNFA();
-		NFA.PrintAutomaton();
 		DeterministicFiniteAutomaton DFA;
 		NFA.NedeterministicToDeterministic(DFA);
 
