@@ -9,7 +9,7 @@ std::unordered_set<std::string> NedeterministicFiniteAutomatonLamda::LamdaClosur
 		/*closures.insert(newUnordered_set.begin(), newUnordered_set.end());
 		closures.insert(it);*/
 	}
-
+	closures.insert(q.begin(), q.end());
 	return closures;
 }
 
@@ -19,15 +19,16 @@ std::unordered_set<std::string> NedeterministicFiniteAutomatonLamda::LamdaClosur
 	if (m_Delta.find({ q, '#' }) != m_Delta.end())
 	{
 		auto myVector = m_Delta.find({ q, '#' })->second;
-		closures.insert(myVector.begin(), myVector.end());
 		for (auto it : myVector)
 		{
 			if(closures.find(it) == closures.end())
 			{
+				closures.insert(it);
 				auto newSet = LamdaClosureForQ(it, closures);
 				closures.insert(newSet.begin(), newSet.end());
 			}
 		}
+		//closures.insert(myVector.begin(), myVector.end());
 	}
 
 	return closures;
@@ -64,6 +65,21 @@ bool NedeterministicFiniteAutomatonLamda::IsFinal(std::unordered_set<std::string
 	}
 	return false;
 }
+
+bool NedeterministicFiniteAutomatonLamda::isInResultsFromLamda(std::unordered_set<std::string> UnorderedsetToFind, std::unordered_map<std::unordered_set<std::string>, std::unordered_set<std::string>, UnorderedSetHash> resultFromLamdaClosure)
+{
+	std::set<std::string> setToFind;
+	setToFind.insert(UnorderedsetToFind.begin(), UnorderedsetToFind.end());
+	for (auto& [key, value] : resultFromLamdaClosure)
+	{
+		std::set<std::string> setToSearchIn;
+		setToSearchIn.insert(key.begin(), key.end());
+		if (setToFind == setToSearchIn)
+			return true;
+	}
+	return false;
+}
+
 
 NedeterministicFiniteAutomatonLamda::NedeterministicFiniteAutomatonLamda()
 {}
@@ -138,6 +154,33 @@ NedeterministicFiniteAutomatonLamda NedeterministicFiniteAutomatonLamda::Merge(N
 		else
 		{
 			m_Delta[it.first] = it.second;
+		}
+
+		for (int index = 0; index < it.second.size(); index++)
+		{
+			for (auto& state : m_Finals)
+			{
+				if (it.second[index] == nfa.m_Initial)
+					it.second[index] = state + nfa.m_Initial;
+			}
+		}
+	}
+	for (auto& it : m_Delta)
+	{
+		if (it.first.first == *m_Finals.begin())
+		{
+			for (auto state : m_Finals)
+			{
+				m_Delta[{state + nfa.m_Initial, it.first.second}].assign(it.second.begin(), it.second.end());
+			}
+		}
+		for (int index = 0 ;index < it.second.size(); index ++)
+		{
+			for(auto& state: m_Finals)
+			{
+				if (it.second[index] == state)
+					it.second[index] = state + nfa.m_Initial;
+			}
 		}
 	}
 	m_Finals = nfa.m_Finals;
@@ -220,16 +263,6 @@ void NedeterministicFiniteAutomatonLamda::modifyToLamdaTranzitions(int contor)
 	}
 }
 
-struct UnorderedSetHash {
-	std::size_t operator()(const std::unordered_set<std::string>& s) const {
-		std::size_t hash = 0;
-		for (const auto& str : s) {
-			// Combine the hash of each element in the set
-			hash ^= std::hash<std::string>{}(str)+0x9e3779b9 + (hash << 6) + (hash >> 2);
-		}
-		return hash;
-	}
-};
 
 void NedeterministicFiniteAutomatonLamda::NedeterministicToDeterministic(DeterministicFiniteAutomaton& dfa)
 {
@@ -272,7 +305,7 @@ void NedeterministicFiniteAutomatonLamda::NedeterministicToDeterministic(Determi
 			lamdaClosures = LamdaClosure(states);
 			if (states.size())
 			{
-				if (resultFromLamdaClosure.find(states) == resultFromLamdaClosure.end())
+				if (!isInResultsFromLamda(states, resultFromLamdaClosure))
 				{
 					resultFromLamdaClosure[states] = lamdaClosures;
 					newQ["q_" + std::to_string(index)] = lamdaClosures;

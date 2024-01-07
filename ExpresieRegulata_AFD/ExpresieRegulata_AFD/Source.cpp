@@ -41,6 +41,7 @@ int main()
 		myExpression.ExpressionToPolishNotation();
 
 		NedeterministicFiniteAutomatonLamda NFA = myExpression.CreateNFA();
+		std::cout << "\n\n";
 		DeterministicFiniteAutomaton DFA;
 		NFA.NedeterministicToDeterministic(DFA);
 
@@ -51,7 +52,7 @@ int main()
 		bool moreOptions = true;
 
 		//Start loop for menu
-		while (moreOptions)
+		while (moreOptions && DFA.VerifyAutomaton())
 		{
 			PrintMenu();
 

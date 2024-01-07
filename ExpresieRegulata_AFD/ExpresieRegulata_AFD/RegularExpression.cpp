@@ -92,12 +92,12 @@ NedeterministicFiniteAutomatonLamda RegularExpression::CreateNFA()
         else
             if (character == '.')
             {
-                NedeterministicFiniteAutomatonLamda A(Stack.top());
-                Stack.pop();
                 NedeterministicFiniteAutomatonLamda B(Stack.top());
                 Stack.pop();
-                B.Merge(A);
-                Stack.push(B);
+                NedeterministicFiniteAutomatonLamda A(Stack.top());
+                Stack.pop();
+                A.Merge(B);
+                Stack.push(A);
             }
             else
                 if (character == '|')
