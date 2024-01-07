@@ -11,7 +11,7 @@ class RegularExpression
 private:
 	std::string m_word;
 	PolishNotation m_PolishNotation;
-
+	bool IsOperator(const char& character);
 
 public:
 	RegularExpression() = default;
@@ -20,6 +20,10 @@ public:
 	void ExpressionToPolishNotation();
 	NedeterministicFiniteAutomatonLamda CreateNFA();
 	bool IsValid();
+
+	//getters
+	std::string GetWord();
+
 	friend std::istream& operator>>(std::istream& in, RegularExpression& expression);
 };
 

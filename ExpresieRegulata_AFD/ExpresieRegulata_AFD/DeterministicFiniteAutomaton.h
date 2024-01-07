@@ -12,7 +12,7 @@ class DeterministicFiniteAutomaton
 private:
 	std::set<std::string> m_Q;
 	std::set<char> m_Sigma;
-	std::map<std::pair<std::string, char>, std::vector<std::string>> m_Delta;
+	std::map<std::pair<std::string, char>, std::string> m_Delta;
 	std::string m_Initial;
 	std::string m_Final;
 public:
@@ -22,9 +22,6 @@ public:
 	void PrintAutomaton();
 	bool CheckWord(std::string word);
 
-	/*void AddInQ(std::string q);
-	void AddInSigma(char character);*/
-
 	void SetQ(std::string q);
 	void SetSigma(std::set<char> sigma);
 	void SetFinal(std::string state);
@@ -32,7 +29,5 @@ public:
 	void SetInitial(std::string state);
 
 	std::set<std::string> GetQ();
-private:
-	bool IsDeterministic();
 };
 

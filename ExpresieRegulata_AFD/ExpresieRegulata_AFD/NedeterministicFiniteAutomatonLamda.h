@@ -42,7 +42,7 @@ public:
 
 	void createNFA_Initial_Final_Character(std::string initial, std::string finals, char character);
 	NedeterministicFiniteAutomatonLamda connectAutomatonLamda(NedeterministicFiniteAutomatonLamda nfa, uint16_t contor);
-	void modifyTpLamdaTranzitions(int contor);
+	void modifyToLamdaTranzitions(int contor);
 
 
 	void NedeterministicToDeterministic(DeterministicFiniteAutomaton& dfa);

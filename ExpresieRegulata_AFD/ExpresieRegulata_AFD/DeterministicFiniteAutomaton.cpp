@@ -30,13 +30,10 @@ bool DeterministicFiniteAutomaton::VerifyAutomaton()
     }
 
     //Rule4 - m_F has or is equal to m_Q
-    //for (auto status : m_Finals)
-    //{
-        if (find(m_Q.begin(), m_Q.end(), m_Final) == m_Q.end())
-        {
-            return false;
-        }
-    //}
+    if (find(m_Q.begin(), m_Q.end(), m_Final) == m_Q.end())
+    {
+        return false;
+    }
 
     //Rule5 - the key in map is valid
     for (auto it : m_Delta)
@@ -49,12 +46,9 @@ bool DeterministicFiniteAutomaton::VerifyAutomaton()
         {
             return false;
         }
-        for (auto i : it.second)
+        if (find(m_Q.begin(), m_Q.end(), it.second) == m_Q.end())
         {
-            if (find(m_Q.begin(), m_Q.end(), i) == m_Q.end())
-            {
-                return false;
-            }
+            return false;
         }
     }
     return true;
@@ -99,16 +93,13 @@ void DeterministicFiniteAutomaton::PrintAutomaton()
     file << m_Initial << ", {";
     std::cout << m_Final << "}), where delta is:\n";
     file << m_Final << "}), where delta is:\n";
-    for (auto [key, vector] : m_Delta)
+    for (auto [key, value] : m_Delta)
     {
         auto [state, character] = key;
-        for (auto i : vector)
-        {
-            std::cout << "(" << state << ", " << character << ") = ";
-            file << "(" << state << ", " << character << ") = ";
-            std::cout << i << ";\n";
-            file << i << ";\n";
-        }
+        std::cout << "(" << state << ", " << character << ") = ";
+        file << "(" << state << ", " << character << ") = ";
+        std::cout << value << ";\n";
+        file << value << ";\n";
     }
 }
 
@@ -131,16 +122,13 @@ bool DeterministicFiniteAutomaton::CheckWord(std::string word)
             std::cout << "Jam!\n";
             return false;
         }
-        currentQ = *it->second.begin();
+        currentQ = it->second;
         word.erase(word.begin(), word.begin() + 1);
     }
-    //for (auto index : m_Finals)
-    //{
-        if (currentQ == m_Final)
-        {
-            return true;
-        }
-    //}
+    if (currentQ == m_Final)
+    {
+        return true;
+    }
     return false;
 }
 
@@ -161,7 +149,7 @@ void DeterministicFiniteAutomaton::SetFinal(std::string state)
 
 void DeterministicFiniteAutomaton::SetDelta(std::string Key, char character, std::string Value)
 {
-    m_Delta[{Key, character}].push_back(Value);
+    m_Delta[{Key, character}] = Value;
 }
 
 void DeterministicFiniteAutomaton::SetInitial(std::string state)
@@ -172,16 +160,4 @@ void DeterministicFiniteAutomaton::SetInitial(std::string state)
 std::set<std::string> DeterministicFiniteAutomaton::GetQ()
 {
     return m_Q;
-}
-
-bool DeterministicFiniteAutomaton::IsDeterministic()
-{
-    for (const auto& [key, value] : m_Delta)
-    {
-        if (value.size() != 1)
-        {
-            return false;
-        }
-    }
-    return true;
 }

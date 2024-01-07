@@ -9,7 +9,7 @@ std::unordered_set<std::string> NedeterministicFiniteAutomatonLamda::LamdaClosur
 		closures.insert(newUnordered_set.begin(), newUnordered_set.end());
 		closures.insert(it);
 	}
-	
+
 	return closures;
 }
 
@@ -26,7 +26,7 @@ std::unordered_set<std::string> NedeterministicFiniteAutomatonLamda::LamdaClosur
 			closures.insert(newSet.begin(), newSet.end());
 		}
 	}
-	
+
 	return closures;
 }
 
@@ -139,7 +139,7 @@ void NedeterministicFiniteAutomatonLamda::createNFA_Initial_Final_Character(std:
 	m_Q.insert(final);
 	m_Sigma.insert(character);
 	m_Delta[{initial, character}].push_back(final);
-	
+
 }
 
 NedeterministicFiniteAutomatonLamda NedeterministicFiniteAutomatonLamda::connectAutomatonLamda(NedeterministicFiniteAutomatonLamda nfa, uint16_t contor)
@@ -166,7 +166,7 @@ NedeterministicFiniteAutomatonLamda NedeterministicFiniteAutomatonLamda::connect
 	return newNFA;
 }
 
-void NedeterministicFiniteAutomatonLamda::modifyTpLamdaTranzitions(int contor)
+void NedeterministicFiniteAutomatonLamda::modifyToLamdaTranzitions(int contor)
 {
 	std::string lastInitial = m_Initial, lastFinal = m_Final;
 	this->SetInitial("q" + std::to_string(contor));
@@ -192,7 +192,7 @@ void NedeterministicFiniteAutomatonLamda::NedeterministicToDeterministic(Determi
 {
 	std::unordered_map<std::unordered_set<std::string>, std::unordered_set<std::string>, UnorderedSetHash> resultFromLamdaClosure;
 	std::unordered_map<std::string, std::unordered_set<std::string> > newQ;
-	
+
 	std::unordered_set<std::string> lamdaClosures, states;
 	int index = 0;
 	lamdaClosures = LamdaClosureForQ(m_Initial);
@@ -214,25 +214,25 @@ void NedeterministicFiniteAutomatonLamda::NedeterministicToDeterministic(Determi
 	std::vector<std::string> Q(aux.begin(), aux.end());
 	//auto it = Q.begin();
 	//auto finalIterator = Q.end();
-	
+
 	int ind = 0;
 
 	//de modificat Q in vector pentru a parcurge vectorul cu un while. 
 	//eroare pentru ca parcurgem si modificam Q in acelasi timp
 
-	while(ind < Q.size())
+	while (ind < Q.size())
 	{
 		const std::string currentState = Q[ind];
 		for (auto character : m_Sigma)
-		{ 
+		{
 			for (auto status : newQ[currentState])
 			{
 				std::unordered_set<std::string> aux = QWithCharacter(status, character);
 				states.insert(aux.begin(), aux.end());
 			}
-			
+
 			lamdaClosures = LamdaClosure(states);
-			if(states.size())
+			if (states.size())
 			{
 				if (resultFromLamdaClosure.find(states) == resultFromLamdaClosure.end())
 				{

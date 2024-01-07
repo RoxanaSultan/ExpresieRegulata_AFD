@@ -9,15 +9,51 @@ std::istream& operator>>(std::istream& in, RegularExpression& expression)
 
 bool RegularExpression::IsValid()
 {
-    for (auto i : m_word)
+    std::stack<char> auxiliary;
+    char previous = '\0';
+    for (int i = 0; i < m_word.size(); i++)
     {
-        if (i < 'a' && i > 'z' && i != '*' && i != '|' && i != '.' && i != '(' && i != ')')
+        if (!isdigit(m_word[i]) && !IsOperator(m_word[i]) && m_word[i] != ' ' && m_word[i] != '	' && m_word[i] != '(' && m_word[i] != ')' && !isalpha(m_word[i])) return false;
+        if (IsOperator(m_word[0]) || (IsOperator(m_word[m_word.size() - 1]) && m_word[m_word.size() - 1] != '*')) return false;
+        if (IsOperator(m_word[i]) && IsOperator(previous) && m_word[i] != '.' && previous != '*') return false;
+        if (isdigit(m_word[i]) && isdigit(previous)) return false;
+        if (m_word[i] == '(' || IsOperator(m_word[i])) auxiliary.push(m_word[i]);
+        if (m_word[i] == ')')
         {
-            std::cout << "The expression contains invalid elements!\n";
-            return false;
+            if (!auxiliary.empty())
+                if (IsOperator(auxiliary.top()))
+                {
+                    while (IsOperator(auxiliary.top()))
+                        auxiliary.pop();
+                    if (auxiliary.top() == '(') auxiliary.pop();
+                    else return false;
+                }
+                else return false;
+            else return false;
+
         }
+        previous = m_word[i];
+    }
+    while (!auxiliary.empty())
+    {
+        if (auxiliary.top() == '(' || auxiliary.top() == ')') return false;
+        auxiliary.pop();
     }
     return true;
+}
+
+std::string RegularExpression::GetWord()
+{
+    return m_word;
+}
+
+bool RegularExpression::IsOperator(const char& character)
+{
+    if (character == '.' || character == '|' || character == '*')
+    {
+        return true;
+    }
+    return false;
 }
 
 RegularExpression::RegularExpression(const RegularExpression& expression) : m_word{expression.m_word}, m_PolishNotation{expression.m_PolishNotation}
@@ -49,7 +85,7 @@ NedeterministicFiniteAutomatonLamda RegularExpression::CreateNFA()
         if (std::ranges::find(operators, character) == operators.end())
         {
             NedeterministicFiniteAutomatonLamda nfa;
-            nfa.createNFA_Initial_Final_Character("q" + std::to_string(contor), "q" + std::to_string(contor + 1), character);
+            nfa.createNFA_Initial_Final_Character("q" + std::to_string(contor), { "q" + std::to_string(contor + 1) }, character);
             Stack.push(nfa);
             contor += 2;
         }
@@ -77,7 +113,7 @@ NedeterministicFiniteAutomatonLamda RegularExpression::CreateNFA()
                 else
                     if (character == '*')
                     {
-                        Stack.top().modifyTpLamdaTranzitions(contor);
+                        Stack.top().modifyToLamdaTranzitions(contor);
                         contor += 2;
                     }
         index++;

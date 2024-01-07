@@ -11,6 +11,18 @@ void PrintMenu()
 	std::cout << "(c) verify a word in automaton.\n\n";
 }
 
+void PrintExpression(RegularExpression myExpression)
+{
+	std::cout << "The expression is: ";
+	for (auto character : myExpression.GetWord())
+	{
+		if (character != '.')
+		{
+			std::cout << character;
+		}
+	}
+}
+
 int main()
 {	std::ifstream file("file.in");
 	if (!file.is_open())
@@ -24,7 +36,10 @@ int main()
 	{
 		std::cout << "Valid expression!\n";
 
+		myExpression.ExpressionToPolishNotation();
+
 		NedeterministicFiniteAutomatonLamda NFA = myExpression.CreateNFA();
+		NFA.PrintAutomaton();
 		DeterministicFiniteAutomaton DFA;
 		NFA.NedeterministicToDeterministic(DFA);
 
@@ -47,6 +62,7 @@ int main()
 				DFA.PrintAutomaton();
 				break;
 			case 'b':
+				PrintExpression(myExpression);
 				break;
 			case 'c':
 				std::cout << "The word to be verified is: ";
@@ -75,6 +91,9 @@ int main()
 			std::cout << "\n";
 		}
 	}
-	
+	else
+	{
+		std::cout << "Invalid expression!\n";
+	}
 	file.close();
 }
