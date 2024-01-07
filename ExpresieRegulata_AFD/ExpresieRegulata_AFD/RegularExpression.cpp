@@ -11,11 +11,12 @@ bool RegularExpression::IsValid()
 {
     std::stack<char> auxiliary;
     char previous = '\0';
+    if (m_word.empty()) return false;
     for (int i = 0; i < m_word.size(); i++)
     {
         if (!isdigit(m_word[i]) && !IsOperator(m_word[i]) && m_word[i] != ' ' && m_word[i] != '	' && m_word[i] != '(' && m_word[i] != ')' && !isalpha(m_word[i])) return false;
         if (IsOperator(m_word[0]) || (IsOperator(m_word[m_word.size() - 1]) && m_word[m_word.size() - 1] != '*')) return false;
-        if (IsOperator(m_word[i]) && IsOperator(previous) && m_word[i] != '.' && previous != '*') return false;
+        if (IsOperator(m_word[i]) && IsOperator(previous) && previous != '*') return false;
         if (isdigit(m_word[i]) && isdigit(previous)) return false;
         if (m_word[i] == '(' || IsOperator(m_word[i])) auxiliary.push(m_word[i]);
         if (m_word[i] == ')')
